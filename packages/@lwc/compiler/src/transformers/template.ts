@@ -5,13 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-import {
-    CompilerError,
-    normalizeToCompilerError,
-    DiagnosticLevel,
-    TransformerErrors,
-} from '@lwc/errors';
-import compile from '@lwc/template-compiler';
+
+import { normalizeToCompilerError, TransformerErrors, DiagnosticLevel, CompilerError } from '@lwc/errors';
+import { compile } from '@lwc/template-compiler-next';
+
 import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
 
@@ -35,9 +32,7 @@ export default function templateTransform(
     let result;
 
     try {
-        result = compile(src, {
-            experimentalDynamicDirective: !!options.experimentalDynamicComponent,
-        });
+        result = compile(src);
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }

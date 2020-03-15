@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler-next",
-    "version": "1.3.6",
+    "version": "1.7.4",
     "description": "Template compiler package",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",

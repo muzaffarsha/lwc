@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -12,10 +12,9 @@ import {
     invokeEventListener,
 } from './invoker';
 import { VM, scheduleRehydration } from './vm';
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
-import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
+import { getVMBeingRendered, TemplateFactory, Template } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -31,7 +30,7 @@ export interface ComponentConstructor extends LightningElementConstructor {
 
 export interface ComponentMeta {
     readonly name: string;
-    readonly template?: Template;
+    readonly template?: TemplateFactory;
 }
 
 const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
@@ -42,7 +41,7 @@ const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new M
  */
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { name, tmpl: template }: { name: string; tmpl: Template }
+    { name, tmpl: template }: { name: string; tmpl: TemplateFactory }
 ): ComponentConstructor {
     signedComponentToMetaMap.set(Ctor, { name, template });
     // chaining this method as a way to wrap existing
@@ -75,23 +74,17 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
-export function renderComponent(vm: VM): VNodes {
+export function renderComponent(vm: VM): Template | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
     vm.tro.reset();
-    const vnodes = invokeComponentRenderMethod(vm);
+    const template = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;
 
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`
-        );
-    }
-    return vnodes;
+    return template;
 }
 
 export function markComponentAsDirty(vm: VM) {
@@ -104,10 +97,6 @@ export function markComponentAsDirty(vm: VM) {
         assert.isFalse(
             isInvokingRender,
             `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
-        );
-        assert.isFalse(
-            isUpdatingTemplate,
-            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`
         );
     }
     vm.isDirty = true;

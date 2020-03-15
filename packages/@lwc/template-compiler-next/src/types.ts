@@ -80,3 +80,9 @@ export interface ASTRoot {
 export interface CompilerConfig {
     preserveWhitespaces?: boolean;
 }
+
+export interface CompilerOutput {
+    code: string,
+    ast: ASTRoot,
+    warnings: any[]
+}
