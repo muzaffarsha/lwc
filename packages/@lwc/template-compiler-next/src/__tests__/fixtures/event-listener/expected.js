@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createElement, addListener, createComponent } = renderer;
+const { createElement, addListener, createComponent, insert } = renderer;
 
 import foo_bar__default from 'foo-bar';
 
@@ -14,8 +14,8 @@ export default function template(context) {
             addListener(foo_bar, "click", context.handleClick);
         },
         insert(target, anchor) {
-            insert(div, target);
-            insert(foo_bar, target);
+            insert(target, div);
+            insert(target, foo_bar);
         },
         update() {
             

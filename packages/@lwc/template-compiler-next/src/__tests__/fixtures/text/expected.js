@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createText } = renderer;
+const { createText, insert } = renderer;
 
 export default function template(context) {
     let text;
@@ -8,7 +8,7 @@ export default function template(context) {
             text = createText("Hello world!\n");
         },
         insert(target, anchor) {
-            insert(text, target);
+            insert(target, text);
         },
         update() {
             

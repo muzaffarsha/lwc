@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createElement, createText } = renderer;
+const { createElement, createText, insert } = renderer;
 
 export default function template(context) {
     let span;
@@ -10,8 +10,8 @@ export default function template(context) {
             text = createText("test");
         },
         insert(target, anchor) {
-            insert(span, target);
-            insert(text, span);
+            insert(target, span);
+            insert(span, text);
         },
         update() {
             

@@ -27,7 +27,7 @@ function generateExpression(expression: ASTExpression): string {
     }
 }
 
-function generateTextNode(renderer: Renderer, block: Block, parent: string, text: ASTText): void {
+function generateTextNode(block: Block, parent: string, text: ASTText): void {
     if (typeof text.value === 'string') {
         block.addElement('text', parent, `@createText(${JSON.stringify(text.value)})`);
     } else {
@@ -178,7 +178,7 @@ function generateChildNode(
             break;
 
         case 'text':
-            generateTextNode(renderer, block, parent, childNode);
+            generateTextNode(block, parent, childNode);
             break;
 
         case 'element':

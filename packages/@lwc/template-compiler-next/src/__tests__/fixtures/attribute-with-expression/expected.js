@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createElement, setAttribute } = renderer;
+const { createElement, setAttribute, insert } = renderer;
 
 export default function template(context) {
     let div;
@@ -12,7 +12,7 @@ export default function template(context) {
             setAttribute(div, "style", style_value);
         },
         insert(target, anchor) {
-            insert(div, target);
+            insert(target, div);
         },
         update() {
             if (class_value !== (class_value = context.divClass)) {

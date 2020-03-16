@@ -34,7 +34,7 @@ export class Block {
         identifier = this.registerIdentifier(identifier);
 
         this.createStatements.push(`${identifier} = ${create};`);
-        this.insertStatements.push(`insert(${identifier}, ${parentIdentifier});`);
+        this.insertStatements.push(`@insert(${parentIdentifier}, ${identifier});`);
 
         return identifier;
     }

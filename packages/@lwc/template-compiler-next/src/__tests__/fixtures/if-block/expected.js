@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createText } = renderer;
+const { createText, insert } = renderer;
 
 export default function template(context) {
     let if_block = context.isTrue && ifBlock(context);
@@ -51,7 +51,7 @@ function ifBlock(context) {
             text = createText("I am true\n    ");
         },
         insert(target, anchor) {
-            insert(text, target);
+            insert(target, text);
         },
         update() {
             
@@ -66,7 +66,7 @@ function ifBlock0(context) {
             text = createText("I am false\n    ");
         },
         insert(target, anchor) {
-            insert(text, target);
+            insert(target, text);
         },
         update() {
             

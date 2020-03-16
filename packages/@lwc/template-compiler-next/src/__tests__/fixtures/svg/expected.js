@@ -1,5 +1,5 @@
 import { renderer } from 'lwc';
-const { createElement, setAttribute } = renderer;
+const { createElement, setAttribute, insert } = renderer;
 
 export default function template(context) {
     let svg;
@@ -12,8 +12,8 @@ export default function template(context) {
             setAttribute(circle, "cy", "50");
         },
         insert(target, anchor) {
-            insert(svg, target);
-            insert(circle, svg);
+            insert(target, svg);
+            insert(svg, circle);
         },
         update() {
             
