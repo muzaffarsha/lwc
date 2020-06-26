@@ -28,6 +28,7 @@ import {
     isSvgUseHref,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
+    isBooleanAttribute,
 } from './attribute';
 
 import {
@@ -942,7 +943,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         try {
-            const isBooleanAttribute = !rawAttribute.includes('=');
+            const isUsedAsBooleanAttribute = !rawAttribute.includes('=');
             const { value, escapedExpression } = normalizeAttributeValue(
                 matching,
                 rawAttribute,
@@ -955,7 +956,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                     type: IRAttributeType.Expression,
                     value: parseTemplateExpression(el, value),
                 };
-            } else if (isBooleanAttribute) {
+            } else if (isUsedAsBooleanAttribute || isBooleanAttribute(matching.name)) {
                 return {
                     name,
                     location,

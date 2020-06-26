@@ -36,6 +36,8 @@ import {
 
 import { isCustomElement } from '../shared/ir';
 
+export { isBooleanAttribute } from '@lwc/shared';
+
 function isQuotedAttribute(rawAttribute: string) {
     const [, value] = rawAttribute.split('=');
     return value && value.startsWith('"') && value.endsWith('"');
