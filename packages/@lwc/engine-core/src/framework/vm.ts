@@ -31,7 +31,7 @@ import { addCallbackToNextTick, EmptyArray } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 
-import { Template } from './template';
+import { Template, TemplateFactory } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
 import {
@@ -96,7 +96,9 @@ export interface VM<N = HostNode, E = HostElement> {
     isDirty: boolean;
     /** The shadow DOM mode. */
     mode: ShadowRootMode;
-    /** The template method returning the VDOM tree. */
+    /** The current template factory associated with the component. */
+    cmpTemplateFactory: TemplateFactory | null;
+    /** The current template associated with the component. */
     cmpTemplate: Template | null;
     /** The component instance. */
     component: ComponentInterface;
@@ -233,6 +235,7 @@ export function createVM<HostNode, HostElement>(
         cmpFields: create(null),
         oar: create(null),
         cmpTemplate: null,
+        cmpTemplateFactory: null,
 
         context: {
             hostAttribute: undefined,
@@ -303,12 +306,12 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
 
 function rehydrate(vm: VM) {
     if (isTrue(vm.isDirty)) {
-        const template = renderComponent(vm);
-        patchShadowRoot(vm, template!);
+        renderComponent(vm);
+        patchShadowRoot(vm);
     }
 }
 
-function patchShadowRoot(vm: VM, _template: Template) {
+function patchShadowRoot(vm: VM) {
     // const { cmpRoot, children: oldCh } = vm;
 
     // // caching the new children collection

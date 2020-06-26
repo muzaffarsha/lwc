@@ -75,21 +75,6 @@ export class Renderer {
             `;
         }
 
-        const runtimeHelpers: Set<string> = new Set();
-        result = result.replace(/@(\w+)\(/g, (_, helper) => {
-            runtimeHelpers.add(helper);
-            return `${helper}(`;
-        });
-
-        if (runtimeHelpers.size) {
-            result = code`
-                import { renderer } from 'lwc';
-                const { ${Array.from(runtimeHelpers).join(', ')} } = renderer;
-
-                ${result}
-            `;
-        }
-
         return result;
     }
 }

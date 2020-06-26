@@ -14,7 +14,7 @@ import {
 import { VM, scheduleRehydration } from './vm';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
-import { getVMBeingRendered, TemplateFactory, Template } from './template';
+import { getVMBeingRendered, TemplateFactory } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -74,17 +74,16 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
-export function renderComponent(vm: VM): Template | null {
+export function renderComponent(vm: VM): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
     vm.tro.reset();
-    const template = invokeComponentRenderMethod(vm);
+    invokeComponentRenderMethod(vm);
+    
     vm.isDirty = false;
     vm.isScheduled = false;
-
-    return template;
 }
 
 export function markComponentAsDirty(vm: VM) {

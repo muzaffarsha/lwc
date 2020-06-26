@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as path from 'path';
+// import * as path from 'path';
 
 import { normalizeToCompilerError, TransformerErrors, DiagnosticLevel, CompilerError } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler-next';
@@ -45,33 +45,33 @@ export default function templateTransform(
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, options),
+        code: result.code,
         map: { mappings: '' },
     };
 }
 
-function serialize(
-    code: string,
-    filename: string,
-    { namespace, name }: NormalizedTransformOptions
-): string {
-    const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
-    const scopingAttribute = `${namespace}-${name}_${path.basename(
-        filename,
-        path.extname(filename)
-    )}`;
-    let buffer = '';
-    buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
-    buffer += code;
-    buffer += '\n\n';
-    buffer += 'if (_implicitStylesheets) {\n';
-    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
-    buffer += `}\n`;
+// function serialize(
+//     code: string,
+//     filename: string,
+//     { namespace, name }: NormalizedTransformOptions
+// ): string {
+//     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
+//     const scopingAttribute = `${namespace}-${name}_${path.basename(
+//         filename,
+//         path.extname(filename)
+//     )}`;
+//     let buffer = '';
+//     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
+//     buffer += code;
+//     buffer += '\n\n';
+//     buffer += 'if (_implicitStylesheets) {\n';
+//     buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
+//     buffer += `}\n`;
 
-    buffer += `tmpl.stylesheetTokens = {\n`;
-    buffer += `  hostAttribute: "${scopingAttribute}-host",\n`;
-    buffer += `  shadowAttribute: "${scopingAttribute}"\n`;
-    buffer += `};\n`;
+//     buffer += `tmpl.stylesheetTokens = {\n`;
+//     buffer += `  hostAttribute: "${scopingAttribute}-host",\n`;
+//     buffer += `  shadowAttribute: "${scopingAttribute}"\n`;
+//     buffer += `};\n`;
 
-    return buffer;
-}
+//     return buffer;
+// }

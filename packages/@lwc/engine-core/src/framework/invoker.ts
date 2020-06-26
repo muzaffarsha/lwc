@@ -6,7 +6,7 @@
  */
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
-import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered, TemplateFactory } from './template';
+import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered, TemplateFactory } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { startMeasure, endMeasure } from './performance-timing';
@@ -83,7 +83,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     }
 }
 
-export function invokeComponentRenderMethod(vm: VM): Template | null {
+export function invokeComponentRenderMethod(vm: VM): void {
     const {
         def: { render },
         callHook,
@@ -116,7 +116,7 @@ export function invokeComponentRenderMethod(vm: VM): Template | null {
         }
     );
 
-    return evaluateTemplate(vm, templateFactory!);
+    evaluateTemplate(vm, templateFactory!);
 }
 
 export function invokeComponentRenderedCallback(vm: VM): void {

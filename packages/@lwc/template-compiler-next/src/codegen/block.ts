@@ -34,7 +34,7 @@ export class Block {
         identifier = this.registerIdentifier(identifier);
 
         this.createStatements.push(`${identifier} = ${create};`);
-        this.insertStatements.push(`@insert(${parentIdentifier}, ${identifier});`);
+        this.insertStatements.push(`@insert(${identifier}, ${parentIdentifier});`);
 
         return identifier;
     }
@@ -48,20 +48,35 @@ export class Block {
 
         const exportToken = this.isRoot ? 'export default ' : '';
 
-        return code`
-            ${exportToken}function ${this.name}(context) {
-                ${identifierDeclarations}
-                return {
-                    create() {
-                        ${this.createStatements}
-                    },
-                    insert(target, anchor) {
-                        ${this.insertStatements}
-                    },
-                    update() {
-                        ${this.updateStatements}
-                    }
+        let body = code`
+            return {
+                create() {
+                    ${this.createStatements}
+                },
+                insert(target, anchor) {
+                    ${this.insertStatements}
+                },
+                update() {
+                    ${this.updateStatements}
                 }
+            }
+        `;
+
+        const usedRendererMethods: Set<string> = new Set();
+        body = body.replace(/@(\w+)\(/g, (_, helper) => {
+            usedRendererMethods.add(helper);
+            return `${helper}(`;
+        });
+
+        const rendererMethods = usedRendererMethods.size
+            ? `const { ${Array.from(usedRendererMethods).join(', ')} } = renderer;`
+            : '';
+
+        return code`
+            ${exportToken}function ${this.name}(context, renderer) {
+                ${rendererMethods}
+                ${identifierDeclarations}
+                ${body}
             }
         `;
     }

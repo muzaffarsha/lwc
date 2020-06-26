@@ -38,7 +38,7 @@ function generateTextNode(block: Block, parent: string, text: ASTText): void {
 
         block.updateStatements.push(code`
             if (${valueIdentifier} !== (${valueIdentifier} = ${valueLookup})) {
-                @setData(${nodeIdentifier}, ${valueIdentifier});
+                @setText(${nodeIdentifier}, ${valueIdentifier});
             }
         `);
     }

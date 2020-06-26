@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, toString, isFunction } from '@lwc/shared';
+import { isUndefined, isNull } from '@lwc/shared';
 
+import { Renderer } from './renderer';
 import { ComponentInterface } from './component';
 import { VM, runWithBoundaryProtection } from './vm';
 import { startMeasure, endMeasure } from './performance-timing';
@@ -17,7 +18,7 @@ export interface Template {
 }
 
 export interface TemplateFactory {
-    (context: ComponentInterface): Template;
+    (context: ComponentInterface, renderer: Renderer): Template;
 }
 
 export const defaultTemplateFactory: TemplateFactory = () => ({
@@ -34,20 +35,18 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-export function evaluateTemplate(vm: VM, factory?: TemplateFactory): Template | null {
-    let template: Template | null = null;
+export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
+    const { component, tro, renderer, cmpRoot } = vm;
 
-    if (!factory) {
-        return template;
+    // The returned template from by the component during this render cycle is different than the 
+    // previous rendering cycle. In this case the existing template need to be unmounted.
+    if (vm.cmpTemplateFactory !== null && vm.cmpTemplateFactory !== factory) {
+        console.warn('TODO: template swap');
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isFunction(factory),
-            `evaluateTemplate() second argument must be an imported template instead of ${toString(
-                factory
-            )}`
-        );
+    // If the new factory is null, we can just exit at this point.
+    if (isUndefined(factory)) {
+        return;
     }
 
     runWithBoundaryProtection(
@@ -61,11 +60,22 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): Template | 
             }
         },
         () => {
-            // job
-            const { component, tro } = vm;
-            tro.observe(() => {
-                template = factory.call(null, component);
-            });
+            if (isNull(vm.cmpTemplate)) {
+                tro.observe(() => {
+                    const template = factory(component, renderer);
+                    vm.cmpTemplate = template;
+
+                    template.create();
+                    template.insert(cmpRoot);
+                });
+            } else {
+                const template = vm.cmpTemplate;
+
+                tro.observe(() => {
+                    template.update();
+                });
+            }
+            
         },
         () => {
             if (process.env.NODE_ENV !== 'production') {
@@ -73,8 +83,6 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): Template | 
             }
         }
     );
-
-    return template;
 }
 
 /**
