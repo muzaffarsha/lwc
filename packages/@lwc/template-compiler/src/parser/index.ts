@@ -29,6 +29,7 @@ import {
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
     isBooleanAttribute,
+    isGlobalHtmlAttribute,
 } from './attribute';
 
 import {
@@ -956,7 +957,10 @@ export default function parse(source: string, state: State): TemplateParseResult
                     type: IRAttributeType.Expression,
                     value: parseTemplateExpression(el, value),
                 };
-            } else if (isUsedAsBooleanAttribute || isBooleanAttribute(matching.name)) {
+            } else if (
+                isUsedAsBooleanAttribute ||
+                (isBooleanAttribute(matching.name) && isGlobalHtmlAttribute(matching.name))
+            ) {
                 return {
                     name,
                     location,

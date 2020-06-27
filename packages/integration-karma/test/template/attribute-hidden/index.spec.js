@@ -12,7 +12,7 @@ function generateTestCases(testElement) {
 }
 
 describe('boolean attribute', () => {
-    const elm = createElement('x-static', { is: Test });
+    const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
 
     describe('used in html element', () => {
