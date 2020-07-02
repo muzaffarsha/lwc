@@ -5,11 +5,11 @@ import Test from 'x/test';
 function generateTestCases(testElement) {
     const itTitle = testElement.textContent;
     const expectedValue = !!(testElement.dataset.expected || false);
-    const expectedAttributeValue = expectedValue ? "" : null;
+    const expectedAttributeValue = expectedValue ? '' : null;
 
     it(itTitle, () => {
         expect(testElement.hidden).toBe(expectedValue);
-        expect(testElement.getAttribute("hidden")).toBe(expectedAttributeValue);
+        expect(testElement.getAttribute('hidden')).toBe(expectedAttributeValue);
     });
 }
 
